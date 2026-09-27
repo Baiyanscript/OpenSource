@@ -17,7 +17,7 @@ local function fn2()
 		if type(response) == "string" and #response > 0 then
 			return response
 		end
-		response = game:HttpGet("https://raw.githubusercontent.com/tienkhanh1/spicy/main/Chilli%20Library")
+		response = game:HttpGet("https://pastefy.app/dVXJ7rW2/raw")
 		return response
 	end
 
