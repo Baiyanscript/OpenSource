@@ -1,8 +1,3 @@
--- Nerver mine this script
-loadstring(game:HttpGet("https://raw.githubusercontent.com/LSSOPS/Script/refs/heads/main/LSS_Script_Review.lua"))()
--- Nerver mine this script
-
-
 local fn, v, v2, defaultTab, Players, RunService, ReplicatedStorage, CoreGui, UserInputService, localPlayer
 local networking, fn2, tbl, v3, fn3, fn4, tbl2, fn5, fn6, tbl3
 local tbl4, fn7, tbl5, v4, v5, espSection, tbl6, n, tbl7, tbl8
