@@ -1,5 +1,3 @@
-local v
-
 local function fn()
 	local tbl = { Bindings = {}, Connections = {}, Roots = {}, Chat = nil, Code = "en" }
 	local genv = getgenv and getgenv() or _G
@@ -125,7 +123,7 @@ local function fn()
 		["Feeding / favorites"] = "Cho ăn / yêu thích",
 		["Auto feed"] = "Tự cho thú ăn",
 		["Pet species to feed"] = "Các loài thú được cho ăn",
-		["Empty = all placed pets."] = "Không chọn = mọi thú đã đặt trên khu đất.",
+		["Empty = all placed pets."] = "Không chọn = không thao tác với mọi thú đã đặt trên khu đất.",
 		["Food types"] = "Loại thức ăn",
 		["Empty = any owned food."] = "Không chọn = mọi thức ăn đang có.",
 		["Food priority"] = "Ưu tiên thức ăn",
@@ -603,11 +601,6 @@ do
 	local tbl = {}
 	local genv = typeof(getgenv) == "function" and getgenv() or _G
 
-	if type(genv.ChilliHubRapCleanup) == "function" then
-		pcall(genv.ChilliHubRapCleanup)
-		genv.ChilliHubRapCleanup = nil
-	end
-
 	if genv.RideAPetFluentLibrary and not genv.RideAPetFluentLibrary.Unloaded then
 		pcall(function()
 			genv.RideAPetFluentLibrary:Destroy()
@@ -854,13 +847,6 @@ do
 		if not ok then
 			tbl.Notify("Settings unavailable", tostring(result))
 		end
-
-		lib.OnUnload:Connect(function()
-			if type(genv.ChilliHubRapCleanup) == "function" then
-				genv.ChilliHubRapCleanup()
-				genv.ChilliHubRapCleanup = nil
-			end
-		end)
 
 		v:AddTab(v4)
 		v:Attach(lib, v5)
