@@ -1,20 +1,13 @@
-local Players
-Players = game:GetService("Players")
-local RunService
-RunService = game:GetService("RunService")
-local UserInputService
-UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
 game:GetService("TweenService")
-local Workspace
-Workspace = game:GetService("Workspace")
-local ReplicatedStorage
-ReplicatedStorage = game:GetService("ReplicatedStorage")
-local VirtualInputManager
-VirtualInputManager = game:GetService("VirtualInputManager")
+local Workspace = game:GetService("Workspace")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local VirtualInputManager = game:GetService("VirtualInputManager")
 game:GetService("TeleportService")
 game:GetService("CollectionService")
-local localPlayer
-localPlayer = Players.LocalPlayer
+local localPlayer = Players.LocalPlayer
 
 while not localPlayer do
 	task.wait()
@@ -26,20 +19,12 @@ if getgenv()._SyneroxOuwlandRunning and getgenv()._SyneroxOuwlandDestroy then
 	task.wait(0.3)
 end
 
-if getgenv()._ZenithLockDestroy then
-	pcall(getgenv()._ZenithLockDestroy)
-	getgenv()._ZenithLockDestroy = nil
-end
-
 getgenv()._SyneroxOuwlandRunning = true
-
-print("[Slayers 2] build=2026-09-30e-DEVSKIP-ON (no comments)")
 
 if _G.SlayersKyokaHub and _G.SlayersKyokaHub.Destroy then
 	pcall(function()
 		_G.SlayersKyokaHub:Destroy()
 	end)
-
 	_G.SlayersKyokaHub = nil
 end
 
@@ -47,7 +32,6 @@ if _G.SlayersSyneroxHub and _G.SlayersSyneroxHub.Destroy then
 	pcall(function()
 		_G.SlayersSyneroxHub:Destroy()
 	end)
-
 	_G.SlayersSyneroxHub = nil
 end
 
@@ -79,9 +63,7 @@ pcall(function()
 	end
 end)
 
-local v
-v = nil
-
+local v = nil
 do
 	local ok, result = pcall(function()
 		return loadstring(game:HttpGet("https://synex.lat/loaders/synerox.lua"))()
@@ -111,9 +93,7 @@ if not v then
 	return
 end
 
-local fn
-
-fn = function(arg, arg2, arg3)
+local fnfn = function(arg, arg2, arg3)
 	pcall(function()
 		if not v or not v.Notify then
 			return
@@ -128,749 +108,184 @@ fn = function(arg, arg2, arg3)
 end
 
 do
-	local VALID_KEYS = {
-		["zenith1"] = true,
-	}
+	local HttpService = game:GetService("HttpService")
+	local lib = nil
 
-	local DISCORD_URL = "https://discord.gg/qtpXAmu6UA"
+	pcall(function()
+		lib = loadstring(game:HttpGet("https://jnkie.com/sdk/library.lua"))()
+	end)
 
-	local SOUNDS = {
-		Click = "rbxassetid://6895079853",
-		Toggle = "rbxassetid://6895079683",
-		Notif = "rbxassetid://4590657391",
-	}
+	if lib then
+		lib.service = "Synerox"
+		lib.identifier = "1168081"
+		lib.provider = "Synex"
+	end
 
-	local NEON_CYAN = Color3.fromRGB(0, 235, 255)
-	local NEON_PURPLE = Color3.fromRGB(160, 85, 255)
-	local NEON_PINK = Color3.fromRGB(255, 75, 155)
-	local SUCCESS = Color3.fromRGB(45, 225, 140)
-	local WARNING = Color3.fromRGB(255, 185, 45)
-	local DANGER = Color3.fromRGB(255, 75, 90)
+	local str = nil
 
-	local WINDOW_GLASS = Color3.fromRGB(10, 12, 18)
-	local CARD_GLASS = Color3.fromRGB(18, 22, 33)
-	local CARD_STROKE = Color3.fromRGB(42, 48, 68)
-	local TEXT_PRIMARY = Color3.fromRGB(245, 248, 255)
-	local TEXT_SECONDARY = Color3.fromRGB(150, 158, 182)
-	local TEXT_MUTED = Color3.fromRGB(95, 103, 128)
-	local ACCENT_TEXT = Color3.fromRGB(5, 10, 16)
-	local GETKEY_BG = Color3.fromRGB(24, 28, 42)
-
-	local TweenService = game:GetService("TweenService")
-	local Lighting = game:GetService("Lighting")
-	local SoundService = game:GetService("SoundService")
-
-	local function playSound(asset, volume)
+	if lib and lib.get_key_link then
 		pcall(function()
-			local sound = Instance.new("Sound")
-			sound.SoundId = asset
-			sound.Volume = volume or 0.3
-			sound.Parent = SoundService
-			sound:Play()
-			task.delay(2, function()
-				sound:Destroy()
-			end)
+			str = lib.get_key_link()
 		end)
 	end
 
-	local function openInBrowser(url)
-		local opened = false
-
-		pcall(function()
-			for _, fn in ipairs({ openurl, openUrl, OpenUrl, open_url, windowopen, WindowOpen }) do
-				if type(fn) == "function" then
-					local ok = pcall(fn, url)
-
-					if ok and not opened then
-						opened = true
-					end
-				end
-			end
-		end)
-
-		pcall(function()
-			local genv = getgenv and getgenv() or {}
-
-			for _, name in ipairs({ "openurl", "openUrl", "OpenUrl", "open_url", "OpenURL", "windowopen" }) do
-				if type(genv[name]) == "function" then
-					local ok = pcall(genv[name], url)
-
-					if ok and not opened then
-						opened = true
-					end
-				end
-			end
-		end)
-
-		return opened
+	if not str or str == "" then
+		str = "https://jnkie.com"
 	end
 
-	local parentGui = nil
+	local str2 = "https://discordbot-production-3e4c.up.railway.app"
+	local str3 = "premium"
+	getgenv().SCRIPT_KEY = nil
+	getgenv().SyneroxTier = nil
 
-	do
-		local ok, coreGui = pcall(function()
-			return game:GetService("CoreGui")
-		end)
-
-		if ok and coreGui then
-			parentGui = coreGui
-		else
-			ok, parentGui = pcall(function()
-				return localPlayer:WaitForChild("PlayerGui")
+	local function fn2()
+		local str4 = nil
+		if getdeviceid then
+			local ok, result = pcall(getdeviceid)
+			ok = ok and result and #tostring(result) > 4
+			str4 = nil
+			if ok then
+				str4 = tostring(result)
+			end
+		end
+		if not str4 and syn and syn.get_hwid then
+			local ok, result = pcall(syn.get_hwid)
+			if ok and result and #tostring(result) > 4 then
+				str4 = tostring(result)
+			end
+		end
+		if not str4 and gethwid then
+			local ok, result = pcall(gethwid)
+			if ok and result and #tostring(result) > 4 then
+				str4 = tostring(result)
+			end
+		end
+		if not str4 and get_hwid then
+			local ok, result = pcall(get_hwid)
+			if ok and result and #tostring(result) > 4 then
+				str4 = tostring(result)
+			end
+		end
+		if not str4 and (rawget(_G, "gethwid") or rawget(_G, "get_hwid")) then
+			local ok, result = pcall(rawget(_G, "gethwid") or rawget(_G, "get_hwid"))
+			if ok and result and #tostring(result) > 4 then
+				str4 = tostring(result)
+			end
+		end
+		if not str4 then
+			local ok, result = pcall(function()
+				return game:GetService("RbxAnalyticsService"):GetClientId()
 			end)
+			if ok and result and #tostring(result) > 4 then
+				str4 = tostring(result)
+			end
+		end
+		return str4 or "UNKNOWN_DEVICE"
+	end
+
+	local function fn3()
+		pcall(function()
+			local floor = math.floor
+			math.randomseed(os.time() + floor(os.clock() * 1000000))
+		end)
+		if syn and syn.crypt and syn.crypt.random then
+			local ok, result = pcall(function()
+				return syn.crypt.hex(syn.crypt.random(16))
+			end)
+			if ok and result and #result == 32 then
+				return result
+			end
+		end
+		local tbl = {}
+		for i = 1, 32 do
+			local floor = math.floor
+			local n = (math.random(1, 16) + floor(os.clock() * 1000000) + i) % 16 + 1
+			tbl[i] = ("0123456789abcdef"):sub(n, n)
+		end
+		return table.concat(tbl)
+	end
+
+	local function fn4(arg)
+		local tbl = {}
+		for i = 1, #arg, 2 do
+			local num = tonumber(arg:sub(i, i + 1), 16)
+			if not num then
+				return nil
+			end
+			tbl[#tbl + 1] = string.char(num)
+		end
+		return table.concat(tbl)
+	end
+
+	local function fn5(arg, arg2, arg3)
+		return true
+	end
+
+	local function fn6(arg)
+		return true, {valid = true, expires_at = "Lifetime"}
+	end
+
+	local tbl = {
+		not_found = "Key not found in Premium database.",
+		reused_nonce = "Security token expired. Try again.",
+		invalid_nonce = "Security token invalid. Try again.",
+		stale_timestamp = "System clock desynced. Check your PC time.",
+		hwid_mismatch = "Device limit reached for this key.",
+		KEY_INVALID = "Key not found or invalid.",
+		KEY_EXPIRED = "Your key has expired. Please get a new one.",
+		HWID_BANNED = "Device banned from Synerox.",
+		KEY_INVALIDATED = "This key has been invalidated.",
+		ALREADY_USED = "This one-time key has already been redeemed.",
+		HWID_MISMATCH = "Device limit reached for this key.",
+		SERVICE_NOT_FOUND = "Service not found in system.",
+		SERVICE_MISMATCH = "This key belongs to another service.",
+		PREMIUM_REQUIRED = "Premium key required.",
+		RATE_LIMITED = "Rate limit reached. Please wait 5 minutes.",
+		RATE_LIMITTED = "Rate limit reached. Please wait 5 minutes.",
+		ERROR = "Network error connecting to verification servers.",
+	}
+
+	local function fn7(arg, arg2)
+		if v and v.Notify then
+			v:Notify({ Title = arg, Content = arg2, Duration = 5 })
 		end
 	end
 
-	local function notify(content)
-		local gui = Instance.new("ScreenGui")
-		gui.Name = "ZenithLockToast"
-		gui.ResetOnSpawn = false
-		gui.IgnoreGuiInset = true
-		gui.DisplayOrder = 1000
-		gui.Parent = parentGui
-
-		local card = Instance.new("Frame")
-		card.Size = UDim2.new(0, 300, 0, 52)
-		card.AnchorPoint = Vector2.new(0.5, 0)
-		card.Position = UDim2.new(0.5, 0, 0, 24)
-		card.BackgroundColor3 = WINDOW_GLASS
-		card.BackgroundTransparency = 0.1
-		card.BorderSizePixel = 0
-		card.Parent = gui
-
-		local corner = Instance.new("UICorner")
-		corner.CornerRadius = UDim.new(0, 12)
-		corner.Parent = card
-
-		local stroke = Instance.new("UIStroke")
-		stroke.Color = NEON_CYAN
-		stroke.Transparency = 0.4
-		stroke.Thickness = 1.2
-		stroke.Parent = card
-
-		local label = Instance.new("TextLabel")
-		label.Size = UDim2.new(1, -20, 1, 0)
-		label.Position = UDim2.new(0, 10, 0, 0)
-		label.BackgroundTransparency = 1
-		label.Font = Enum.Font.GothamMedium
-		label.TextSize = 13
-		label.TextColor3 = TEXT_PRIMARY
-		label.TextXAlignment = Enum.TextXAlignment.Left
-		label.Text = content
-		label.Parent = card
-
-		task.wait(3.5)
-
-		pcall(function()
-			TweenService:Create(card, TweenInfo.new(0.3), { BackgroundTransparency = 1 }):Play()
-			TweenService:Create(label, TweenInfo.new(0.3), { TextTransparency = 1 }):Play()
-			TweenService:Create(stroke, TweenInfo.new(0.3), { Transparency = 1 }):Play()
-		end)
-
-		task.wait(0.35)
-
-		pcall(function()
-			gui:Destroy()
-		end)
-	end
-
-	local zenUnlocked = false
-	local isChecking = false
-	local TryUnlock = nil
-
-	local DEV_SKIP = true
-
-	local devSkip = DEV_SKIP or getgenv().ZenithDevSkip == true
-
-	if devSkip then
-		zenUnlocked = true
-		getgenv().SCRIPT_KEY = "devskip"
+	local function fn8(arg)
+		getgenv().SCRIPT_KEY = arg or "LSS"
 		getgenv().SyneroxTier = "premium"
-		print("[Zenith] DEV SKIP - key gate bypassed.")
+		v.IsPremium = true
+		fn7("Premium Validated", "Welcome back! Lifetime (Bypassed)")
+		return true
 	end
 
-	local existingLock = parentGui and parentGui:FindFirstChild("ZenithLock")
+	if v and v.KeySystem and v.KeySystem.new then
+		local flag = false
 
-	if existingLock then
-		existingLock:Destroy()
+		v.KeySystem.new({
+			Title = "Synerox",
+			SubTitle = "Synerox Hub  |  Premium Bypassed",
+			Note = "Enter 'LSS' or any text to bypass.",
+			SaveKey = true,
+			FileName = "Synerox_Key.txt",
+			ShowExit = true,
+			CustomValidate = function(arg)
+				return fn8(arg)
+			end,
+			OnSuccess = function()
+				flag = true
+			end,
+		})
+
+		repeat
+			task.wait(0.5)
+		until flag
 	end
-
-	local lockScreen = Instance.new("ScreenGui")
-	lockScreen.Name = "ZenithLock"
-	lockScreen.ResetOnSpawn = false
-	lockScreen.IgnoreGuiInset = true
-	lockScreen.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-	lockScreen.DisplayOrder = 999
-
-	if not devSkip then
-		lockScreen.Parent = parentGui
-	end
-
-	local lockBlur = nil
-
-	if not devSkip then
-		pcall(function()
-			lockBlur = Instance.new("BlurEffect")
-			lockBlur.Name = "ZenithLockBlur"
-			lockBlur.Size = 8
-			lockBlur.Parent = Lighting
-		end)
-	end
-
-	local dim = Instance.new("Frame")
-	dim.Name = "Dim"
-	dim.Size = UDim2.fromScale(1, 1)
-	dim.BackgroundColor3 = Color3.fromRGB(4, 6, 12)
-	dim.BackgroundTransparency = 0.35
-	dim.BorderSizePixel = 0
-	dim.Active = true
-	dim.Parent = lockScreen
-
-	local function FreezeHumanoid(hum)
-		hum.WalkSpeed = 0
-		hum.JumpPower = 0
-		hum.JumpHeight = 0
-		hum:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
-			if not zenUnlocked then
-				hum.WalkSpeed = 0
-			end
-		end)
-
-		if hum and not zenUnlocked then
-			hum.JumpPower = 0
-			hum.JumpHeight = 0
-		end
-	end
-
-	local function HoldCharacter(char)
-		local hum = char and char:WaitForChild("Humanoid", 10)
-
-		if hum and not zenUnlocked then
-			FreezeHumanoid(hum)
-		end
-	end
-
-	task.spawn(function()
-		HoldCharacter(localPlayer.Character)
-	end)
-
-	local charConn = localPlayer.CharacterAdded:Connect(HoldCharacter)
-
-	local function UnfreezeCharacter()
-		pcall(function()
-			local char = localPlayer.Character
-			local hum = char and char:FindFirstChildOfClass("Humanoid")
-
-			if hum then
-				hum.WalkSpeed = 16
-				hum.JumpPower = 50
-				hum.JumpHeight = 7.2
-			end
-		end)
-	end
-
-	local lockCard = Instance.new("Frame")
-	lockCard.Name = "LockCard"
-	lockCard.Size = UDim2.new(0, 390, 0, 440)
-	lockCard.AnchorPoint = Vector2.new(0.5, 0.5)
-	lockCard.Position = UDim2.new(0.5, 0, 0.5, 0)
-	lockCard.BackgroundColor3 = WINDOW_GLASS
-	lockCard.BackgroundTransparency = 0.08
-	lockCard.BorderSizePixel = 0
-	lockCard.ClipsDescendants = true
-	lockCard.Active = true
-	lockCard.Parent = lockScreen
-
-	local lockCorner = Instance.new("UICorner")
-	lockCorner.CornerRadius = UDim.new(0, 16)
-	lockCorner.Parent = lockCard
-
-	local lockStroke = Instance.new("UIStroke")
-	lockStroke.Color = Color3.fromRGB(255, 255, 255)
-	lockStroke.Thickness = 1.8
-	lockStroke.Parent = lockCard
-
-	local borderGradient = Instance.new("UIGradient")
-	borderGradient.Color = ColorSequence.new({
-		ColorSequenceKeypoint.new(0.0, NEON_PURPLE),
-		ColorSequenceKeypoint.new(0.35, NEON_CYAN),
-		ColorSequenceKeypoint.new(0.70, NEON_PINK),
-		ColorSequenceKeypoint.new(1.0, NEON_PURPLE),
-	})
-	borderGradient.Rotation = 45
-	borderGradient.Parent = lockStroke
-
-	local rotAngle = 0
-	local rotConn = RunService.RenderStepped:Connect(function(dt)
-		rotAngle = (rotAngle + (dt * 45)) % 360
-		borderGradient.Rotation = rotAngle
-	end)
-
-	local sheen = Instance.new("Frame")
-	sheen.Name = "Sheen"
-	sheen.Size = UDim2.new(1, 0, 0, 90)
-	sheen.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	sheen.BorderSizePixel = 0
-	sheen.Parent = lockCard
-
-	local sheenGrad = Instance.new("UIGradient")
-	sheenGrad.Transparency = NumberSequence.new({
-		NumberSequenceKeypoint.new(0, 0.94),
-		NumberSequenceKeypoint.new(0.4, 0.98),
-		NumberSequenceKeypoint.new(1, 1),
-	})
-	sheenGrad.Rotation = 90
-	sheenGrad.Parent = sheen
-
-	local lockAccent = Instance.new("Frame")
-	lockAccent.Name = "LockAccent"
-	lockAccent.Size = UDim2.new(0, 64, 0, 3)
-	lockAccent.AnchorPoint = Vector2.new(0.5, 0)
-	lockAccent.Position = UDim2.new(0.5, 0, 0, 0)
-	lockAccent.BackgroundColor3 = NEON_CYAN
-	lockAccent.BorderSizePixel = 0
-	lockAccent.Parent = lockCard
-
-	local lockAccentCorner = Instance.new("UICorner")
-	lockAccentCorner.CornerRadius = UDim.new(1, 0)
-	lockAccentCorner.Parent = lockAccent
-
-	local brandLogo = Instance.new("TextLabel")
-	brandLogo.Name = "BrandLogo"
-	brandLogo.Size = UDim2.new(0, 38, 0, 38)
-	brandLogo.AnchorPoint = Vector2.new(0.5, 0)
-	brandLogo.Position = UDim2.new(0.5, 0, 0, 20)
-	brandLogo.BackgroundColor3 = CARD_GLASS
-	brandLogo.BackgroundTransparency = 0.2
-	brandLogo.Text = "\u{1F7E1}"
-	brandLogo.TextSize = 18
-	brandLogo.TextColor3 = NEON_CYAN
-	brandLogo.Font = Enum.Font.GothamBold
-	brandLogo.Parent = lockCard
-
-	local brandLogoCorner = Instance.new("UICorner")
-	brandLogoCorner.CornerRadius = UDim.new(0, 10)
-	brandLogoCorner.Parent = brandLogo
-
-	local brandLogoStroke = Instance.new("UIStroke")
-	brandLogoStroke.Color = NEON_CYAN
-	brandLogoStroke.Transparency = 0.4
-	brandLogoStroke.Thickness = 1.2
-	brandLogoStroke.Parent = brandLogo
-
-	local lockTitle = Instance.new("TextLabel")
-	lockTitle.Name = "LockTitle"
-	lockTitle.Size = UDim2.new(1, 0, 0, 28)
-	lockTitle.Position = UDim2.new(0, 0, 0, 64)
-	lockTitle.BackgroundTransparency = 1
-	lockTitle.Font = Enum.Font.GothamBlack
-	lockTitle.TextSize = 22
-	lockTitle.TextColor3 = TEXT_PRIMARY
-	lockTitle.RichText = true
-	lockTitle.Text = "<b>ZENITH</b> <font color=\"rgb(0,235,255)\">STUDIO</font>"
-	lockTitle.TextXAlignment = Enum.TextXAlignment.Center
-	lockTitle.Parent = lockCard
-
-	local lockSubtitle = Instance.new("TextLabel")
-	lockSubtitle.Name = "LockSubtitle"
-	lockSubtitle.Size = UDim2.new(1, -40, 0, 16)
-	lockSubtitle.AnchorPoint = Vector2.new(0.5, 0)
-	lockSubtitle.Position = UDim2.new(0.5, 0, 0, 94)
-	lockSubtitle.BackgroundTransparency = 1
-	lockSubtitle.Font = Enum.Font.Gotham
-	lockSubtitle.TextSize = 12
-	lockSubtitle.TextColor3 = TEXT_SECONDARY
-	lockSubtitle.Text = "Enter your license key to continue"
-	lockSubtitle.TextXAlignment = Enum.TextXAlignment.Center
-	lockSubtitle.Parent = lockCard
-
-	local statusBadge = Instance.new("Frame")
-	statusBadge.Name = "StatusBadge"
-	statusBadge.Size = UDim2.new(0, 240, 0, 24)
-	statusBadge.AnchorPoint = Vector2.new(0.5, 0)
-	statusBadge.Position = UDim2.new(0.5, 0, 0, 118)
-	statusBadge.BackgroundColor3 = CARD_GLASS
-	statusBadge.BackgroundTransparency = 0.35
-	statusBadge.BorderSizePixel = 0
-	statusBadge.Parent = lockCard
-
-	local sbCorner = Instance.new("UICorner")
-	sbCorner.CornerRadius = UDim.new(0, 12)
-	sbCorner.Parent = statusBadge
-
-	local sbStroke = Instance.new("UIStroke")
-	sbStroke.Color = CARD_STROKE
-	sbStroke.Transparency = 0.5
-	sbStroke.Thickness = 1
-	sbStroke.Parent = statusBadge
-
-	local sbDot = Instance.new("Frame")
-	sbDot.Name = "Dot"
-	sbDot.Size = UDim2.new(0, 6, 0, 6)
-	sbDot.AnchorPoint = Vector2.new(0, 0.5)
-	sbDot.Position = UDim2.new(0, 10, 0.5, 0)
-	sbDot.BackgroundColor3 = WARNING
-	sbDot.BorderSizePixel = 0
-	sbDot.Parent = statusBadge
-
-	local sbDotCorner = Instance.new("UICorner")
-	sbDotCorner.CornerRadius = UDim.new(1, 0)
-	sbDotCorner.Parent = sbDot
-
-	local lockStatus = Instance.new("TextLabel")
-	lockStatus.Name = "StatusText"
-	lockStatus.Size = UDim2.new(1, -26, 1, 0)
-	lockStatus.Position = UDim2.new(0, 22, 0, 0)
-	lockStatus.BackgroundTransparency = 1
-	lockStatus.Font = Enum.Font.GothamMedium
-	lockStatus.TextSize = 11
-	lockStatus.TextColor3 = TEXT_SECONDARY
-	lockStatus.TextXAlignment = Enum.TextXAlignment.Left
-	lockStatus.TextTruncate = Enum.TextTruncate.AtEnd
-	lockStatus.Text = "License Gate \u{2022} Awaiting Key"
-	lockStatus.Parent = statusBadge
-
-	local keyLabel = Instance.new("TextLabel")
-	keyLabel.Name = "KeyLabel"
-	keyLabel.Size = UDim2.new(1, -48, 0, 14)
-	keyLabel.AnchorPoint = Vector2.new(0.5, 0)
-	keyLabel.Position = UDim2.new(0.5, 0, 0, 152)
-	keyLabel.BackgroundTransparency = 1
-	keyLabel.Font = Enum.Font.GothamBold
-	keyLabel.TextSize = 10
-	keyLabel.TextColor3 = TEXT_MUTED
-	keyLabel.TextXAlignment = Enum.TextXAlignment.Left
-	keyLabel.Text = "LICENSE KEY"
-	keyLabel.Parent = lockCard
-
-	local keyBox = Instance.new("TextBox")
-	keyBox.Name = "KeyBox"
-	keyBox.Size = UDim2.new(1, -48, 0, 42)
-	keyBox.AnchorPoint = Vector2.new(0.5, 0)
-	keyBox.Position = UDim2.new(0.5, 0, 0, 170)
-	keyBox.BackgroundColor3 = CARD_GLASS
-	keyBox.BackgroundTransparency = 0.25
-	keyBox.BorderSizePixel = 0
-	keyBox.Font = Enum.Font.GothamBold
-	keyBox.TextSize = 14
-	keyBox.TextColor3 = TEXT_PRIMARY
-	keyBox.PlaceholderText = "ENTER KEY"
-	keyBox.PlaceholderColor3 = TEXT_MUTED
-	keyBox.TextXAlignment = Enum.TextXAlignment.Center
-	keyBox.ClearTextOnFocus = false
-	keyBox.Text = ""
-	keyBox.Parent = lockCard
-
-	local keyCorner = Instance.new("UICorner")
-	keyCorner.CornerRadius = UDim.new(0, 8)
-	keyCorner.Parent = keyBox
-
-	local keyStroke = Instance.new("UIStroke")
-	keyStroke.Color = CARD_STROKE
-	keyStroke.Transparency = 0.5
-	keyStroke.Thickness = 1
-	keyStroke.Parent = keyBox
-
-	keyBox.Focused:Connect(function()
-		TweenService:Create(keyStroke, TweenInfo.new(0.2), {
-			Color = NEON_CYAN,
-			Transparency = 0.2,
-			Thickness = 1.4,
-		}):Play()
-	end)
-
-	keyBox.FocusLost:Connect(function(enterPressed)
-		TweenService:Create(keyStroke, TweenInfo.new(0.2), { Color = CARD_STROKE, Transparency = 0.5, Thickness = 1 }):Play()
-
-		if enterPressed and TryUnlock then
-			TryUnlock()
-		end
-	end)
-
-	local unlockBtn = Instance.new("TextButton")
-	unlockBtn.Name = "UnlockBtn"
-	unlockBtn.Size = UDim2.new(1, -48, 0, 42)
-	unlockBtn.AnchorPoint = Vector2.new(0.5, 0)
-	unlockBtn.Position = UDim2.new(0.5, 0, 0, 224)
-	unlockBtn.BackgroundColor3 = NEON_CYAN
-	unlockBtn.BorderSizePixel = 0
-	unlockBtn.AutoButtonColor = false
-	unlockBtn.Font = Enum.Font.GothamBold
-	unlockBtn.TextSize = 14
-	unlockBtn.TextColor3 = ACCENT_TEXT
-	unlockBtn.Text = "UNLOCK"
-	unlockBtn.Parent = lockCard
-
-	local unlockCorner = Instance.new("UICorner")
-	unlockCorner.CornerRadius = UDim.new(0, 8)
-	unlockCorner.Parent = unlockBtn
-
-	local getKeyBtn = Instance.new("TextButton")
-	getKeyBtn.Name = "GetKeyBtn"
-	getKeyBtn.Size = UDim2.new(1, -48, 0, 38)
-	getKeyBtn.AnchorPoint = Vector2.new(0.5, 0)
-	getKeyBtn.Position = UDim2.new(0.5, 0, 0, 276)
-	getKeyBtn.BackgroundColor3 = GETKEY_BG
-	getKeyBtn.BackgroundTransparency = 0.25
-	getKeyBtn.BorderSizePixel = 0
-	getKeyBtn.AutoButtonColor = false
-	getKeyBtn.Font = Enum.Font.GothamBold
-	getKeyBtn.TextSize = 13
-	getKeyBtn.TextColor3 = TEXT_PRIMARY
-	getKeyBtn.Text = "GET A KEY"
-	getKeyBtn.Parent = lockCard
-
-	local getKeyCorner = Instance.new("UICorner")
-	getKeyCorner.CornerRadius = UDim.new(0, 8)
-	getKeyCorner.Parent = getKeyBtn
-
-	local getKeyStroke = Instance.new("UIStroke")
-	getKeyStroke.Color = CARD_STROKE
-	getKeyStroke.Transparency = 0.6
-	getKeyStroke.Thickness = 1
-	getKeyStroke.Parent = getKeyBtn
-
-	local discordBtn = Instance.new("TextButton")
-	discordBtn.Name = "DiscordBtn"
-	discordBtn.Size = UDim2.new(1, -48, 0, 30)
-	discordBtn.AnchorPoint = Vector2.new(0.5, 0)
-	discordBtn.Position = UDim2.new(0.5, 0, 0, 324)
-	discordBtn.BackgroundTransparency = 1
-	discordBtn.AutoButtonColor = false
-	discordBtn.Font = Enum.Font.GothamMedium
-	discordBtn.TextSize = 12
-	discordBtn.TextColor3 = TEXT_SECONDARY
-	discordBtn.Text = "Need a key or help? Join Discord"
-	discordBtn.Parent = lockCard
-
-	discordBtn.MouseEnter:Connect(function()
-		TweenService:Create(discordBtn, TweenInfo.new(0.15), { TextColor3 = NEON_CYAN }):Play()
-	end)
-
-	discordBtn.MouseLeave:Connect(function()
-		TweenService:Create(discordBtn, TweenInfo.new(0.15), { TextColor3 = TEXT_SECONDARY }):Play()
-	end)
-
-	discordBtn.MouseButton1Click:Connect(function()
-		playSound(SOUNDS.Click, 0.3)
-
-		if not openInBrowser(DISCORD_URL) then
-			pcall(function()
-				if setclipboard then
-					setclipboard(DISCORD_URL)
-				end
-			end)
-
-			lockStatus.Text = "Discord link copied to clipboard"
-			sbDot.BackgroundColor3 = WARNING
-			TweenService:Create(sbStroke, TweenInfo.new(0.2), { Color = WARNING, Transparency = 0.2 }):Play()
-		end
-	end)
-
-	local lockFooter = Instance.new("TextLabel")
-	lockFooter.Name = "FooterLabel"
-	lockFooter.Size = UDim2.new(1, 0, 0, 20)
-	lockFooter.AnchorPoint = Vector2.new(0.5, 1)
-	lockFooter.Position = UDim2.new(0.5, 0, 1, -14)
-	lockFooter.BackgroundTransparency = 1
-	lockFooter.Font = Enum.Font.GothamMedium
-	lockFooter.TextSize = 10
-	lockFooter.TextColor3 = TEXT_MUTED
-	lockFooter.Text = "ZENITH STUDIO \u{2022} OFFLINE KEY"
-	lockFooter.TextXAlignment = Enum.TextXAlignment.Center
-	lockFooter.Parent = lockCard
-
-	TryUnlock = function()
-		if zenUnlocked or isChecking then
-			return
-		end
-
-		local key = (keyBox.Text:gsub("%s+", ""))
-
-		if #key == 0 then
-			lockStatus.Text = "Enter your key first"
-			sbDot.BackgroundColor3 = WARNING
-			TweenService:Create(sbStroke, TweenInfo.new(0.2), { Color = WARNING, Transparency = 0.2 }):Play()
-			playSound(SOUNDS.Notif, 0.3)
-
-			return
-		end
-
-		isChecking = true
-		unlockBtn.Text = "CHECKING..."
-		unlockBtn.Active = false
-		lockStatus.Text = "Verifying key..."
-		sbDot.BackgroundColor3 = NEON_CYAN
-		TweenService:Create(sbStroke, TweenInfo.new(0.2), { Color = NEON_CYAN, Transparency = 0.2 }):Play()
-
-		task.spawn(function()
-			local ok = VALID_KEYS[key:lower()] == true
-
-			if not ok then
-				isChecking = false
-				unlockBtn.Text = "UNLOCK"
-				unlockBtn.Active = true
-
-				lockStatus.Text = "Invalid key entered"
-				sbDot.BackgroundColor3 = DANGER
-				TweenService:Create(sbStroke, TweenInfo.new(0.2), { Color = DANGER, Transparency = 0.2 }):Play()
-				playSound(SOUNDS.Notif, 0.4)
-
-				return
-			end
-
-			zenUnlocked = true
-
-			getgenv().SCRIPT_KEY = key
-			getgenv().SyneroxTier = "premium"
-			v.IsPremium = true
-
-			if rotConn then
-				rotConn:Disconnect()
-				rotConn = nil
-			end
-
-			pcall(function()
-				if charConn then
-					charConn:Disconnect()
-					charConn = nil
-				end
-			end)
-
-			pcall(function()
-				if lockBlur then
-					lockBlur:Destroy()
-					lockBlur = nil
-				end
-			end)
-
-			sbDot.BackgroundColor3 = SUCCESS
-			lockStatus.Text = "Key Accepted \u{2022} Loading UI..."
-			TweenService:Create(sbStroke, TweenInfo.new(0.2), { Color = SUCCESS, Transparency = 0.2 }):Play()
-
-			UnfreezeCharacter()
-
-			playSound(SOUNDS.Toggle, 0.4)
-
-			pcall(function()
-				for _, d in ipairs(lockScreen:GetDescendants()) do
-					if d:IsA("GuiObject") then
-						TweenService:Create(d, TweenInfo.new(0.3), { BackgroundTransparency = 1 }):Play()
-					end
-
-					if d:IsA("TextLabel") or d:IsA("TextButton") or d:IsA("TextBox") then
-						TweenService:Create(d, TweenInfo.new(0.25), { TextTransparency = 1 }):Play()
-					end
-
-					if d:IsA("UIStroke") then
-						TweenService:Create(d, TweenInfo.new(0.25), { Transparency = 1 }):Play()
-					end
-				end
-
-				task.wait(0.3)
-			end)
-
-			pcall(function()
-				lockScreen:Destroy()
-			end)
-
-			print("[Zenith] Key accepted - " .. localPlayer.Name)
-
-			task.spawn(function()
-				notify("Key accepted - welcome back, " .. localPlayer.Name .. "!")
-			end)
-		end)
-	end
-
-	unlockBtn.MouseButton1Click:Connect(function()
-		playSound(SOUNDS.Click, 0.4)
-		TryUnlock()
-	end)
-
-	getKeyBtn.MouseButton1Click:Connect(function()
-		playSound(SOUNDS.Click, 0.3)
-
-		if openInBrowser(DISCORD_URL) then
-			lockStatus.Text = "Discord opened - grab a key there!"
-			sbDot.BackgroundColor3 = SUCCESS
-			TweenService:Create(sbStroke, TweenInfo.new(0.2), { Color = SUCCESS, Transparency = 0.2 }):Play()
-		else
-			pcall(function()
-				if setclipboard then
-					setclipboard(DISCORD_URL)
-				end
-			end)
-
-			lockStatus.Text = "Discord link copied to clipboard"
-			sbDot.BackgroundColor3 = WARNING
-			TweenService:Create(sbStroke, TweenInfo.new(0.2), { Color = WARNING, Transparency = 0.2 }):Play()
-		end
-	end)
-
-	unlockBtn.MouseEnter:Connect(function()
-		if not isChecking then
-			TweenService:Create(unlockBtn, TweenInfo.new(0.15), { BackgroundTransparency = 0.15 }):Play()
-		end
-	end)
-
-	unlockBtn.MouseLeave:Connect(function()
-		TweenService:Create(unlockBtn, TweenInfo.new(0.15), { BackgroundTransparency = 0 }):Play()
-	end)
-
-	getKeyBtn.MouseEnter:Connect(function()
-		TweenService:Create(getKeyBtn, TweenInfo.new(0.15), { BackgroundColor3 = CARD_STROKE }):Play()
-		TweenService:Create(getKeyStroke, TweenInfo.new(0.15), { Color = NEON_CYAN, Transparency = 0.3 }):Play()
-	end)
-
-	getKeyBtn.MouseLeave:Connect(function()
-		TweenService:Create(getKeyBtn, TweenInfo.new(0.15), { BackgroundColor3 = GETKEY_BG }):Play()
-		TweenService:Create(getKeyStroke, TweenInfo.new(0.15), { Color = CARD_STROKE, Transparency = 0.6 }):Play()
-	end)
-
-	getgenv()._ZenithLockDestroy = function()
-		zenUnlocked = true
-		UnfreezeCharacter()
-
-		pcall(function()
-			if rotConn then
-				rotConn:Disconnect()
-				rotConn = nil
-			end
-		end)
-
-		pcall(function()
-			if charConn then
-				charConn:Disconnect()
-				charConn = nil
-			end
-		end)
-
-		pcall(function()
-			if lockBlur then
-				lockBlur:Destroy()
-				lockBlur = nil
-			end
-		end)
-
-		pcall(function()
-			lockScreen:Destroy()
-		end)
-	end
-
-	if not devSkip then
-		print("[Zenith] Lock screen loaded - enter key to unlock.")
-	end
-
-	repeat
-		task.wait(0.1)
-	until zenUnlocked
 end
 
 v.IsPremium = getgenv().SyneroxTier == "premium"
-local slayersSyneroxHub
-slayersSyneroxHub = nil
-local SignalFunction
-SignalFunction = nil
+local slayersSyneroxHub = nil
+local SignalFunction = nil
 
 pcall(function()
 	SignalFunction = require(ReplicatedStorage.Communication.ServerAndClient.Signals.SignalFunction)
