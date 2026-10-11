@@ -12,7 +12,7 @@ local function use(name)
         error("Slopix: circular use of " .. tostring(name), 2)
     end
     __loading[name] = true
-    -- A module that errors is unmarked, so the next use() reports its error, not a cycle.
+    -- A module that errors is unmarked, so the next use() reports its error, not a cycle
     local trace = debug and type(debug.traceback) == 'function' and debug.traceback or tostring
     local ok, result = xpcall(loader, trace, use)
     __loading[name] = nil
