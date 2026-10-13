@@ -3,20 +3,20 @@ local genv, version, Library, ThemeManager, SaveManager
 do
 	local str = "https://raw.githubusercontent.com/uhfork/Obsidian/refs/heads/main/"
 	genv = getgenv and getgenv() or _G
-	genv.__PoopHubShared = genv.__PoopHubShared or {}
-	local poopHubShared = genv.__PoopHubShared
+	genv.__EclipseHubShared = genv.__EclipseHubShared or {}
+	local eclipseHubShared = genv.__EclipseHubShared
 	version = "Unknown"
 
 	pcall(function()
-		version = "V5.1.5"
+		version = "V6.8.2"
 	end)
 
 	getShared = function(arg, arg2)
-		if not poopHubShared[arg] then
-			poopHubShared[arg] = arg2()
+		if not eclipseHubShared[arg] then
+			eclipseHubShared[arg] = arg2()
 		end
 
-		return poopHubShared[arg]
+		return eclipseHubShared[arg]
 	end
 
 	Library = getShared("Library", function()
@@ -35,6 +35,48 @@ end
 genv.Library = Library
 genv.ThemeManager = ThemeManager
 genv.SaveManager = SaveManager
+
+do
+	local bwHex = {
+		BackgroundColor = "0a0a0a",
+		MainColor = "161616",
+		AccentColor = "ffffff",
+		OutlineColor = "373737",
+		FontColor = "f0f0f0",
+	}
+
+	pcall(function()
+		if Library.Scheme then
+			for k, hex in pairs(bwHex) do
+				Library.Scheme[k] = Color3.fromHex(hex)
+			end
+			Library.Scheme.DarkColor = Color3.fromRGB(0, 0, 0)
+			Library.Scheme.WhiteColor = Color3.fromRGB(255, 255, 255)
+			Library.Scheme.RedColor = Color3.fromRGB(200, 200, 200)
+		end
+	end)
+
+	pcall(function()
+		local themes = ThemeManager.BuiltInThemes
+		if themes then
+			for _, theme in pairs(themes) do
+				local colors = theme[2]
+				if type(colors) == "table" then
+					for k, hex in pairs(bwHex) do
+						if typeof(colors[k]) == "Color3" then
+							colors[k] = Color3.fromHex(hex)
+						else
+							colors[k] = hex
+						end
+					end
+				end
+			end
+		end
+	end)
+end
+
+genv.EclipseConfig = genv.EclipseConfig or {}
+genv.EclipseConfig.EmoteListUrl = genv.EclipseConfig.EmoteListUrl or "https://raw.githubusercontent.com/dcus-official/PoopHub/refs/heads/main/Assets/Emote/List_Json.lua"
 local getCustomIcon = Library.GetCustomIcon
 
 Library.GetCustomIcon = function(arg, arg2)
@@ -63,7 +105,7 @@ local tbl
 
 tbl = {
 	Zaako = "rbxassetid://79347646107717",
-	Poop = "rbxassetid://130990339683290",
+	Eclipse = "rbxassetid://130990339683290",
 	Rust = "rbxassetid://138750331387064",
 	["Hit Marker"] = "rbxassetid://133749572213659",
 	Neverlose = "rbxassetid://94970221280272",
@@ -111,7 +153,7 @@ _G._NOTIFY = function(arg, arg2)
 		local str = tostring(arg)
 		local pos = str:find(":")
 		local flag = pos and not str:find("https?://")
-		local str2 = "PoopHub"
+		local str2 = "Eclipse Hub"
 
 		if flag then
 			str2 = str:sub(1, pos - 1)
@@ -2276,29 +2318,29 @@ setupPlayerLocationVisual = function()
 	local str = "PlayerCharacterLocationDetector"
 	local CoreGui = game:GetService("CoreGui")
 	local currentCamera = workspace.CurrentCamera
-	local poophubLocationEsp = CoreGui:FindFirstChild("PoophubLocationEsp")
+	local eclipseLocationEsp = CoreGui:FindFirstChild("EclipseLocationEsp")
 
-	if poophubLocationEsp then
+	if eclipseLocationEsp then
 		pcall(function()
-			poophubLocationEsp:Destroy()
+			eclipseLocationEsp:Destroy()
 		end)
 	end
 
-	local poophubLocationParts = workspace:FindFirstChild("PoophubLocationParts")
+	local eclipseLocationParts = workspace:FindFirstChild("EclipseLocationParts")
 
-	if poophubLocationParts then
+	if eclipseLocationParts then
 		pcall(function()
-			poophubLocationParts:Destroy()
+			eclipseLocationParts:Destroy()
 		end)
 	end
 
 	local screenGui = Instance.new("ScreenGui")
-	screenGui.Name = "PoophubLocationEsp"
+	screenGui.Name = "EclipseLocationEsp"
 	screenGui.ResetOnSpawn = false
 	screenGui.IgnoreGuiInset = true
 	screenGui.Parent = CoreGui
 	local folder = Instance.new("Folder")
-	folder.Name = "PoophubLocationParts"
+	folder.Name = "EclipseLocationParts"
 	folder.Parent = workspace
 	local tbl9 = {}
 	local tbl10 = {}
@@ -4642,7 +4684,7 @@ Fun.refreshDanceV2List = function()
 	Fun.currentDanceRawTableV2 = {}
 
 	local ok, result = pcall(function()
-		return game:HttpGet("https://raw.githubusercontent.com/dcus-official/PoopHub/refs/heads/main/Assets/Emote/List_Json.lua")
+		return game:HttpGet(genv.EclipseConfig.EmoteListUrl)
 	end)
 
 	if ok and result then
@@ -4660,20 +4702,20 @@ Fun.refreshDanceV2List = function()
 		end
 	end
 
-	if not isfolder("PoopHub") then
-		makefolder("PoopHub")
+	if not isfolder("EclipseHub") then
+		makefolder("EclipseHub")
 	end
 
-	if not isfolder("PoopHub/FTAP") then
-		makefolder("PoopHub/FTAP")
+	if not isfolder("EclipseHub/FTAP") then
+		makefolder("EclipseHub/FTAP")
 	end
 
-	if not isfolder("PoopHub/FTAP/Emote") then
-		makefolder("PoopHub/FTAP/Emote")
+	if not isfolder("EclipseHub/FTAP/Emote") then
+		makefolder("EclipseHub/FTAP/Emote")
 	end
 
 	local ok2, result2 = pcall(function()
-		return listfiles("PoopHub/FTAP/Emote")
+		return listfiles("EclipseHub/FTAP/Emote")
 	end)
 
 	if ok2 and type(result2) == "table" then
@@ -4805,7 +4847,7 @@ Fun.spawnAndAttachToy = function(arg)
 	end)
 end
 
-print("Poop HUB Fun (Obsidian) loaded successfully!")
+print("Eclipse Hub Fun (Obsidian) loaded successfully!")
 _G.ShieldActive = false
 local tbl10, n, v4
 
@@ -8505,7 +8547,7 @@ end
 
 local part_
 local folder = Instance.new("Folder")
-folder.Name = "PoophubHalo"
+folder.Name = "EclipseHalo"
 folder.Parent = workspace
 part_ = Instance.new("Part")
 part_.Name = "HaloPart"
@@ -8585,7 +8627,7 @@ end
 
 local part_2
 local folder2 = Instance.new("Folder")
-folder2.Name = "PoophubAmbientAura"
+folder2.Name = "EclipseAmbientAura"
 folder2.Parent = workspace
 part_2 = Instance.new("Part")
 part_2.Name = "AuraRoot"
@@ -8776,7 +8818,7 @@ end
 
 local part_3
 local folder3 = Instance.new("Folder")
-folder3.Name = "PoophubAngelWings"
+folder3.Name = "EclipseAngelWings"
 folder3.Parent = workspace
 part_3 = Instance.new("Part")
 part_3.Name = "AngelRoot"
@@ -8907,7 +8949,7 @@ end
 
 do
 	local folder4 = Instance.new("Folder")
-	folder4.Name = "PoophubTrail"
+	folder4.Name = "EclipseTrail"
 	folder4.Parent = workspace
 	local part_4 = Instance.new("Part")
 	part_4.Name = "TrailRoot"
@@ -9052,10 +9094,10 @@ do
 	end)
 end
 
-genv.__PoopHubShared.mcOriginalPartTextures = genv.__PoopHubShared.mcOriginalPartTextures or {}
+genv.__EclipseHubShared.mcOriginalPartTextures = genv.__EclipseHubShared.mcOriginalPartTextures or {}
 
 do
-	local mcOriginalPartTextures = genv.__PoopHubShared.mcOriginalPartTextures
+	local mcOriginalPartTextures = genv.__EclipseHubShared.mcOriginalPartTextures
 
 	local tbl15 = {
 		Rock = "rbxassetid://5003953441",
@@ -9367,7 +9409,7 @@ do
 
 		if arg.Name == "SNOWPART" then
 			local parent = arg.Parent
-			if parent and parent:IsA("Model") and parent.Name == "_PoophubSnowSystem" then
+			if parent and parent:IsA("Model") and parent.Name == "_EclipseSnowSystem" then
 				return true
 			end
 		end
@@ -9635,48 +9677,54 @@ tbl14.StartFontAutoApply = StartFontAutoApply
 tbl14.StopFontAutoApply = StopFontAutoApply
 
 pcall(function()
-	if not isfolder("PoopHub") then
-		makefolder("PoopHub")
+	if not isfolder("EclipseHub") then
+		makefolder("EclipseHub")
 	end
 
-	if not isfolder("PoopHub/Logo") then
-		makefolder("PoopHub/Logo")
+	if not isfolder("EclipseHub/Logo") then
+		makefolder("EclipseHub/Logo")
 	end
 
-	if not isfolder("PoopHub/Logo/UBG") then
-		makefolder("PoopHub/Logo/UBG")
+	if not isfolder("EclipseHub/Logo/UBG") then
+		makefolder("EclipseHub/Logo/UBG")
 	end
 
-	if not isfolder("PoopHub/Logo/FTAP") then
-		makefolder("PoopHub/Logo/FTAP")
+	if not isfolder("EclipseHub/Logo/FTAP") then
+		makefolder("EclipseHub/Logo/FTAP")
 	end
 
-	if not isfolder("PoopHub/Logo/FTAP/ASSET") then
-		makefolder("PoopHub/Logo/FTAP/ASSET")
+	if not isfolder("EclipseHub/Logo/FTAP/ASSET") then
+		makefolder("EclipseHub/Logo/FTAP/ASSET")
 	end
 end)
 
-pcall(function()
-	writefile("PoopHub/Logo/FTAP/dcusplanet.png", game:HttpGet("https://dcus.pro/planet.png"))
-end)
+local result = "moon"
 
-local result
-local ok
+do
+	local moonPng = "\137\80\78\71\13\10\26\10\0\0\0\13\73\72\68\82\0\0\0\128\0\0\0\128\8\6\0\0\0\195\62\97\203\0\0\10\242\73\68\65\84\120\218\237\157\127\172\92\85\17\199\63\119\247\189\34\104\169\34\214\62\168\81\8\45\21\74\35\72\138\90\252\65\8\121\32\152\72\68\211\64\80\251\164\213\24\76\68\75\69\141\226\95\38\54\254\32\106\12\90\165\42\26\127\160\209\24\133\68\20\17\82\69\26\1\13\13\138\138\68\52\136\81\219\82\172\164\111\127\248\199\153\201\78\142\251\246\253\216\189\247\156\221\157\73\110\118\251\118\123\239\221\51\223\153\249\158\153\185\231\20\237\118\27\151\241\149\154\15\129\3\192\197\1\224\226\0\112\113\0\184\56\0\92\28\0\46\14\0\23\7\128\203\120\200\196\136\255\190\98\158\207\219\14\128\209\80\178\61\0\90\209\171\203\8\1\64\21\93\19\11\110\246\176\228\58\112\172\249\188\48\255\167\0\14\3\141\113\6\64\49\36\197\32\85\120\209\69\97\117\224\4\224\20\96\3\240\60\96\163\128\123\149\28\24\143\160\160\184\31\120\15\112\247\56\135\131\220\1\80\136\194\26\145\194\215\2\211\192\43\129\117\192\139\128\99\22\120\206\22\176\19\248\28\240\152\241\10\238\1\50\146\186\188\54\205\191\207\1\46\5\46\22\0\212\187\40\182\21\145\191\66\254\166\161\238\86\96\7\176\47\10\9\30\2\50\82\124\203\40\101\53\176\25\184\82\220\187\149\198\28\4\48\254\206\4\240\47\224\106\224\155\115\92\199\1\144\65\62\162\48\22\255\10\224\42\224\50\96\185\137\209\77\243\221\98\158\233\93\91\190\187\7\152\1\30\54\121\15\159\29\100\2\128\56\198\159\15\188\15\184\32\178\226\26\11\79\90\169\101\215\129\27\128\107\141\39\104\184\202\243\1\64\205\88\226\90\224\58\96\139\177\224\150\177\118\22\161\124\5\202\54\96\151\241\22\110\245\25\1\64\173\113\153\144\178\237\192\138\200\122\23\43\170\252\67\192\187\129\155\128\73\185\142\55\62\102\2\0\27\131\55\1\159\7\78\143\8\27\75\84\62\192\126\224\181\192\189\238\242\23\167\144\42\25\126\11\184\30\184\83\148\175\22\186\84\229\183\205\111\217\44\202\159\116\229\47\220\21\87\165\252\38\48\5\236\150\36\14\209\28\125\169\202\111\202\57\182\1\63\145\247\179\174\218\124\0\160\174\120\19\112\139\128\160\33\160\232\215\3\169\242\175\17\194\231\110\63\51\14\160\10\217\74\72\189\78\136\210\234\3\56\183\158\231\187\146\47\112\194\151\25\0\172\242\191\16\37\103\250\21\101\252\143\0\103\3\7\205\249\93\50\32\129\177\242\155\3\188\158\42\250\8\112\133\48\255\194\149\159\15\0\186\41\127\177\9\157\249\172\191\14\124\28\184\199\132\21\151\12\66\64\21\202\47\128\63\3\103\2\255\193\139\58\217\120\128\122\201\202\87\247\95\16\234\5\79\70\121\0\151\132\30\64\231\249\47\39\84\223\84\81\131\84\190\178\254\59\129\243\204\53\93\18\3\64\123\243\86\2\191\37\180\100\181\25\60\191\80\230\127\30\240\115\121\239\0\200\32\4\232\57\110\22\16\180\74\80\190\54\113\222\33\30\160\112\229\231\1\0\37\125\31\38\212\240\53\195\87\138\183\2\62\97\222\187\36\14\1\90\207\127\25\112\23\157\166\141\65\43\71\61\202\67\192\75\129\167\157\252\165\247\0\74\240\150\1\95\37\164\97\139\146\44\83\75\189\95\2\254\43\30\198\149\159\24\0\74\192\182\3\107\232\180\109\149\33\117\66\214\239\135\17\32\92\18\133\0\101\253\39\3\247\1\207\42\209\250\117\234\247\43\66\163\168\3\32\3\15\160\121\247\235\9\79\216\180\74\36\101\138\206\239\148\52\187\112\0\44\193\29\55\129\87\3\151\211\169\199\151\37\122\189\59\156\248\229\1\0\77\240\124\164\196\233\158\37\127\5\240\119\224\247\238\254\211\3\64\123\250\206\2\94\67\167\42\87\150\168\181\223\67\40\250\56\251\207\132\3\92\93\145\59\214\243\63\104\184\135\75\34\0\104\234\117\138\208\126\85\70\174\191\219\53\45\0\220\250\19\2\64\93\253\229\192\51\233\228\230\203\190\183\6\240\39\7\64\122\0\52\9\89\191\45\125\132\142\197\186\255\130\80\243\127\196\1\144\22\0\74\190\206\34\60\200\81\229\124\188\94\193\108\195\1\176\192\88\252\134\10\167\98\106\237\15\139\23\240\166\207\132\0\80\247\255\186\138\220\191\5\192\65\58\11\65\184\36\0\128\205\251\159\84\17\251\183\50\225\42\74\15\0\128\139\196\11\84\221\133\227\110\63\49\0\84\1\231\70\124\160\42\113\215\159\24\0\45\177\252\211\19\41\196\159\242\77\8\0\141\255\83\192\11\204\220\188\74\203\95\13\28\93\241\181\29\0\145\18\78\34\44\194\152\2\0\39\2\207\112\46\144\22\0\27\18\18\178\178\251\13\28\0\11\248\206\84\2\0\232\170\94\207\38\172\1\92\85\254\193\1\16\17\64\8\173\216\41\8\160\134\156\83\125\70\144\214\3\164\26\120\245\56\235\92\77\213\3\64\115\239\71\11\17\75\153\3\56\27\95\232\49\137\7\80\0\172\78\4\0\189\183\51\129\227\40\183\251\216\1\208\3\4\169\146\49\106\245\207\1\206\112\34\56\126\28\0\99\245\23\57\17\76\7\128\28\238\239\245\164\41\70\57\0\72\155\133\211\39\144\79\17\46\0\222\33\84\41\0\10\210\103\226\180\5\237\50\188\38\80\41\0\10\33\128\7\19\123\2\237\73\124\51\112\60\213\116\36\143\61\0\212\210\14\209\121\44\43\21\0\116\54\176\82\184\192\82\247\19\112\89\34\7\88\150\193\125\106\98\234\189\192\81\158\19\168\6\0\250\217\3\25\145\193\117\132\61\1\252\81\241\10\61\192\227\153\220\171\122\129\247\139\87\114\66\88\50\0\212\226\127\147\73\206\64\189\192\169\132\165\105\220\11\12\194\170\122\44\17\163\3\254\98\9\3\147\25\88\156\174\20\254\148\228\5\30\53\83\69\151\146\60\192\163\132\69\26\114\168\200\105\24\56\22\248\152\123\129\242\1\80\35\44\205\246\187\12\136\160\205\11\52\9\137\161\45\244\183\219\152\3\96\129\159\223\155\17\0\244\190\154\192\103\8\61\139\101\174\80\58\214\0\80\133\223\74\103\249\247\92\102\4\5\97\173\130\175\209\233\90\246\112\48\96\0\180\204\76\224\9\58\207\10\228\228\5\206\32\108\72\213\162\188\245\10\199\218\3\212\129\195\192\237\242\183\156\74\178\186\73\197\91\232\108\82\81\119\16\12\14\0\86\110\201\36\31\16\139\110\20\185\149\176\103\176\243\129\1\229\1\226\169\215\114\66\97\104\138\252\178\112\118\7\209\119\16\246\36\214\101\237\252\169\162\62\61\128\238\235\123\8\248\70\134\97\64\65\170\10\191\81\142\166\9\19\46\125\120\0\5\74\139\240\148\240\3\153\199\89\229\1\187\128\119\154\60\129\111\41\219\7\7\208\140\219\62\194\126\61\57\122\129\152\24\110\37\108\47\179\198\128\160\24\97\29\149\126\114\29\188\79\14\193\64\234\102\146\155\128\95\2\111\162\255\109\234\83\134\181\44\0\160\243\236\159\9\25\172\145\119\17\70\83\198\207\5\190\5\124\154\208\85\212\48\131\155\171\226\39\12\177\93\67\104\130\73\14\0\91\27\248\40\195\177\116\155\246\19\182\128\119\1\247\3\51\102\112\107\25\241\153\194\220\111\131\80\240\250\20\240\1\6\183\227\250\146\73\96\60\168\16\214\240\127\85\153\55\87\18\57\4\248\41\161\154\120\123\244\187\82\76\27\117\163\45\229\84\203\8\75\242\94\71\104\135\95\77\168\198\150\226\113\107\125\12\230\135\24\174\58\124\221\88\254\249\192\143\229\184\192\132\11\245\114\19\37\146\175\194\92\67\75\236\77\177\248\25\224\215\192\110\66\227\203\7\69\249\165\113\129\165\110\27\167\3\246\101\66\26\118\216\74\178\77\163\8\8\59\158\126\22\184\13\248\235\28\110\153\37\120\136\34\178\242\118\151\217\211\105\192\27\129\171\232\60\136\59\11\252\17\120\137\33\175\237\156\0\160\3\183\146\208\43\176\156\225\44\196\196\27\92\63\41\83\199\239\75\152\248\203\28\74\45\230\249\189\173\232\53\54\158\181\192\197\192\165\192\57\38\52\53\229\255\76\2\211\226\161\74\221\35\185\159\141\35\245\198\102\8\123\250\13\115\99\134\90\182\229\50\135\37\239\177\7\184\27\120\76\172\114\255\34\199\232\56\177\242\147\133\51\109\20\0\76\116\1\162\238\194\178\91\198\181\244\13\178\251\221\60\90\51\108\223\22\55\54\236\221\57\109\99\181\221\136\237\1\224\15\132\158\196\3\18\58\186\141\201\70\121\93\5\156\0\172\232\242\189\134\9\67\202\5\106\132\229\241\55\200\108\171\52\215\63\40\0\232\15\88\1\236\37\205\122\194\101\131\161\29\41\170\31\15\211\54\231\41\162\107\41\47\57\151\176\79\82\37\121\150\218\0\6\169\13\252\27\184\34\250\219\176\139\18\192\9\147\43\80\69\233\209\152\227\104\154\120\222\54\249\134\137\57\128\164\158\115\187\40\127\162\170\25\86\191\30\32\14\5\111\39\84\226\188\81\115\225\50\43\164\239\43\192\91\169\184\112\53\40\0\88\16\220\40\64\208\31\230\50\183\168\161\236\37\108\197\247\116\213\30\116\144\177\218\54\100\236\18\229\123\9\118\97\202\159\150\89\7\85\135\207\65\2\64\227\99\29\216\38\32\240\58\252\194\148\191\159\68\197\181\65\179\245\182\153\203\58\8\50\87\126\25\0\232\5\130\89\188\63\111\54\39\229\83\34\83\143\65\0\161\67\39\206\193\143\139\104\120\156\204\73\249\148\172\8\5\65\77\64\112\141\0\66\31\232\24\23\105\25\99\187\137\80\137\204\66\249\131\158\6\246\74\168\104\170\115\154\144\231\158\162\211\191\63\202\15\113\40\41\110\0\215\2\55\24\195\203\162\148\94\5\0\226\60\193\148\128\96\58\26\164\81\180\250\26\97\243\203\25\66\81\169\70\102\153\210\42\99\177\90\252\227\192\133\18\18\142\208\105\118\24\133\69\30\108\171\89\13\248\34\161\48\180\135\78\122\55\43\34\92\165\7\176\160\83\43\88\15\236\164\179\22\240\176\134\5\251\100\18\132\45\239\119\16\26\76\160\130\178\238\48\1\128\46\131\178\153\208\254\180\222\0\161\54\4\179\133\88\241\255\32\172\89\176\83\188\91\118\46\63\39\0\216\16\164\251\19\238\32\116\239\174\52\252\64\191\151\147\87\136\27\72\142\0\95\39\244\73\254\45\119\171\207\9\0\221\188\193\243\129\43\9\189\134\235\35\14\81\36\4\67\203\228\54\244\250\79\0\55\19\42\121\15\26\178\219\100\72\146\94\185\0\0\163\92\219\30\125\33\240\54\153\49\28\21\77\175\236\20\179\12\64\180\35\75\183\215\248\5\161\33\246\7\2\2\24\210\167\145\115\2\128\5\130\206\157\85\214\1\151\240\255\77\148\22\16\246\145\245\90\116\190\94\74\182\211\182\94\221\63\15\1\63\2\190\39\0\176\211\219\161\157\197\228\8\128\216\35\180\163\193\61\77\64\112\9\97\67\169\19\231\201\35\180\122\156\191\23\56\254\73\88\26\231\54\224\46\224\190\200\243\212\24\129\245\7\114\6\64\76\22\107\93\98\235\49\192\11\197\67\108\144\227\120\1\73\157\240\176\69\47\112\104\135\175\118\251\238\149\247\251\8\205\159\7\162\239\219\103\246\70\66\134\5\0\221\192\208\75\17\43\228\59\171\228\232\38\79\137\146\11\230\110\245\174\69\94\104\228\170\153\195\8\128\110\110\92\143\118\151\144\177\152\112\83\116\33\128\35\45\195\14\128\94\10\93\72\156\111\69\100\112\236\100\84\59\119\219\227\174\216\197\196\83\23\7\128\139\3\192\197\1\224\226\0\112\113\0\184\56\0\92\28\0\46\14\0\151\49\144\255\1\189\165\72\176\174\51\142\219\0\0\0\0\73\69\78\68\174\66\96\130"
 
-ok, result = pcall(function()
-	return getcustomasset("PoopHub/Logo/FTAP/dcusplanet.png")
-end)
+	local okIcon, iconPath = pcall(function()
+		if not (writefile and getcustomasset) then
+			error("no file api")
+		end
+		if isfolder and not isfolder("EclipseHub/Logo/FTAP") then
+			makefolder("EclipseHub/Logo/FTAP")
+		end
+		writefile("EclipseHub/Logo/FTAP/moon.png", moonPng)
+		return getcustomasset("EclipseHub/Logo/FTAP/moon.png")
+	end)
 
-if not (ok and result) then
-	result = "rbxassetid://117677503754205"
+	if okIcon and iconPath then
+		result = iconPath
+	end
 end
 
 local v5
 
 v5 = Library:CreateWindow({
-	Title = "PoopHub",
-	SubTitle = "Premium",
-	Footer = "FTAP | V5 | Made by dcus",
+	Title = "Eclipse Hub",
+	SubTitle = "FTAP",
+	Footer = "FTAP | V6.8.2",
 	TabShowTime = 1.5,
 	Icon = result,
 	ShowCustomCursor = true,
@@ -9761,37 +9809,25 @@ end
 local Links = tbl15.Home:AddLeftGroupbox("Links")
 
 Links:AddButton({
-	Text = "Official Page",
+	Text = "Copy Follow Link",
 	Func = function()
 		if setclipboard then
-			setclipboard("https://dcus.pro")
-			_NOTIFY("Official Page link copied to clipboard!", 3)
+			setclipboard("https://rscripts.net/@_LSS")
+			_NOTIFY("Follow link copied to clipboard!", 3)
 		else
-			_NOTIFY("https://dcus.pro", 5)
+			_NOTIFY("https://rscripts.net/@_LSS", 5)
 		end
 	end,
 })
 
 Links:AddButton({
-	Text = "Shop Page",
+	Text = "Copy Hub Link",
 	Func = function()
 		if setclipboard then
-			setclipboard("https://dcus.mysellauth.com")
-			_NOTIFY("Shop Page link copied to clipboard!", 3)
+			setclipboard("https://rscripts.net/hub/lss")
+			_NOTIFY("Hub link copied to clipboard!", 3)
 		else
-			_NOTIFY("https://dcus.mysellauth.com", 5)
-		end
-	end,
-})
-
-Links:AddButton({
-	Text = "Discord Link",
-	Func = function()
-		if setclipboard then
-			setclipboard("https://discord.gg/bUeHwyjdb7")
-			_NOTIFY("Discord link copied to clipboard!", 3)
-		else
-			_NOTIFY("https://discord.gg/bUeHwyjdb7", 5)
+			_NOTIFY("https://rscripts.net/hub/lss", 5)
 		end
 	end,
 })
@@ -11900,7 +11936,7 @@ v13:AddToggle("CustomBlackholeToggle", {
 })
 
 v13:AddInput("CustomBlackholeImageInput", {
-	Default = "https://raw.githubusercontent.com/dcus-official/PoopHub.Free/refs/heads/main/Assets/Logo/Ultimate%20Rainbow%20Poop.png",
+	Default = "https://github.com/public-account-7/somebackup/blob/main/Ultimate%20Rainbow%20Poop.png?raw=true",
 	Numeric = false,
 	Finished = false,
 	Text = "Custom Image URL/ID",
@@ -15938,7 +15974,7 @@ do
 	buildSnow = function()
 		destroySnow()
 		model = Instance.new("Model", workspace)
-		model.Name = "_PoophubSnowSystem"
+		model.Name = "_EclipseSnowSystem"
 		part_4 = Instance.new("Part", model)
 		part_4.Name = "SNOWPART"
 		part_4.Anchored = true
@@ -17776,8 +17812,44 @@ ThemeManager:SetLibrary(Library)
 SaveManager:SetLibrary(Library)
 SaveManager:IgnoreThemeSettings()
 SaveManager:SetIgnoreIndexes({ "MenuKeybind" })
-SaveManager:SetFolder("PoopHUB")
+SaveManager:SetFolder("EclipseHub")
 ThemeManager:ApplyToGroupbox(Theme)
+
+do
+	local bw = {
+		BackgroundColor = Color3.fromRGB(10, 10, 10),
+		MainColor = Color3.fromRGB(22, 22, 22),
+		AccentColor = Color3.fromRGB(255, 255, 255),
+		OutlineColor = Color3.fromRGB(55, 55, 55),
+		FontColor = Color3.fromRGB(240, 240, 240),
+	}
+
+	pcall(function()
+		if Library.Scheme then
+			for k, c in pairs(bw) do
+				Library.Scheme[k] = c
+			end
+			Library.Scheme.RedColor = Color3.fromRGB(200, 200, 200)
+			Library.Scheme.DarkColor = Color3.fromRGB(0, 0, 0)
+			Library.Scheme.WhiteColor = Color3.fromRGB(255, 255, 255)
+		end
+	end)
+
+	pcall(function()
+		for k, c in pairs(bw) do
+			local opt = Library.Options and Library.Options[k]
+			if opt and opt.SetValueRGB then
+				opt:SetValueRGB(c)
+			end
+		end
+	end)
+
+	pcall(function()
+		if Library.UpdateColorsUsingRegistry then
+			Library:UpdateColorsUsingRegistry()
+		end
+	end)
+end
 SaveManager:BuildConfigSection(tbl15.UISettings)
 local v20 = tbl15.UISettings:AddRightGroupbox("Background Image")
 
@@ -18767,10 +18839,8 @@ _G.startKickAura = function()
 end
 
 SaveManager:LoadAutoloadConfig()
-_NOTIFY("Poop HUB (Obsidian UI Edition) Loaded!", 4)
-print("========================================")
-print("Poop HUB - Premium (Obsidian UI Edition)")
-print("========================================")
+_NOTIFY("Eclipse HUB (Obsidian UI Edition) Loaded!", 4)
+print("Eclipse Hub - V6.8.2")
 local Players
 Players = game:GetService("Players")
 local Workspace
@@ -18781,7 +18851,7 @@ do
 	local image = ""
 
 	ensureFolders = function()
-		for _, v21 in ipairs({ "PoopHub", "PoopHub/Logo", "PoopHub/Logo/UBG" }) do
+		for _, v21 in ipairs({ "EclipseHub", "EclipseHub/Logo", "EclipseHub/Logo/UBG" }) do
 			if isfolder and not isfolder(v21) then
 				makefolder(v21)
 			end
@@ -18828,7 +18898,7 @@ do
 							str2 = str2:sub(#str2 - 40)
 						end
 
-						local str3 = "PoopHub/custom_blackhole_" .. str2 .. "_" .. tostring(math.random(10000, 99999)) .. ".png"
+						local str3 = "EclipseHub/custom_blackhole_" .. str2 .. "_" .. tostring(math.random(10000, 99999)) .. ".png"
 						writefile(str3, result2)
 
 						local ok3, result3 = pcall(function()
@@ -18843,9 +18913,6 @@ do
 
 						_G.updateAllBlackholes()
 
-						if Library and Library.Notify then
-							_NOTIFY("Success! Blackhole Image Applied.", 3)
-						end
 					end)
 				elseif Library and Library.Notify then
 					_NOTIFY("Failed to download image from URL", 3)
@@ -18989,7 +19056,7 @@ Workspace.DescendantAdded:Connect(function(descendant)
 	processInstance(descendant)
 end)
 
-print("[PoopHub Monitor] Dynamic BlackHole Customizer Engine Active!")
+print("[Eclipse Hub Monitor] Dynamic BlackHole Customizer Engine Active!")
 
 do
 	local n8 = 0
@@ -19042,28 +19109,28 @@ end
 
 do
 	local v21 = v5:MakeBar({
-		Texts = { "PoopHub", "V5 New Release!", (os.date("%H:%M")) },
+		Texts = { "V6.8.2", "Eclipse Hub", (os.date("%H:%M")) },
 		UseDivider = true,
 		Icon = result,
 		Size = UDim2.new(0, 350, 0, 30),
 	})
 
 	local v22 = v21:AddInfoWindow({
-		Plan = tostring(DCUS_Plan),
-		Expires = tostring(DCUS_Expires):gsub("T.*", ""),
-		HubName = "PoopHub",
+		Plan = "Free",
+		Expires = "Never",
+		HubName = "Eclipse Hub",
 		SubContent = "#1 FTAP",
 	})
 
 	v22:AddChangeLog({
 		Icon = result,
 		Title = "New Release!",
-		Content = [[# V5.1.5 Release!
+		Content = [[# V6.8.2 Release!
 - Ragdoll Kill V2 [New]
 - Loop Banana Ragdoll [New]
 	]],
-		Version = "5.1.5",
-		Tag = { { Color3.fromRGB(162, 48, 255), "New Release" } },
+		Version = "6.8.2",
+		Tag = { { Color3.fromRGB(255, 255, 255), "New Release" } },
 		UseGradient = { FixTag = false, Tag = true, NewTag = true, Version = false, Removed = false },
 		GradientSpeed = 0.004,
 	})
@@ -19077,7 +19144,7 @@ do
 - Defense [New]
 	]],
 		Version = "5.1.3",
-		Tag = { { Color3.fromRGB(162, 48, 255), "New Release" } },
+		Tag = { { Color3.fromRGB(255, 255, 255), "New Release" } },
 		UseGradient = { FixTag = false, Tag = true, NewTag = true, Version = false, Removed = false },
 		GradientSpeed = 0.004,
 	})
@@ -19085,13 +19152,8 @@ do
 	task.spawn(function()
 		local n8 = tick() + 10
 
-		while tick() < n8 do
-			v21:SetText({ "PoopHub", version .. " New Release!", os.date("%H:%M") .. "      " })
-			task.wait(1)
-		end
-
 		while true do
-			v21:SetText({ version, { 10734952479, true, "Buy, Get Key: https://dcus.pro", true }, (os.date("%H:%M")) })
+			v21:SetText({ version, "Eclipse Hub", (os.date("%H:%M")) })
 			task.wait(1)
 		end
 	end)
