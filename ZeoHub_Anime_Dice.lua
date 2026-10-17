@@ -17,9 +17,6 @@ local TweenService = game:GetService("TweenService")
 local HttpService = game:GetService("HttpService")
 local LocalPlayer = Players.LocalPlayer
 
---======================================================================
--- ZEOHUB INTRO ANIMATION
---======================================================================
 do
 	local StarterGui = game:GetService("StarterGui")
 	local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
@@ -281,9 +278,6 @@ do
 	task.wait(T_END)
 end
 
---======================================================================
--- LOW PLAYER COUNT CHECK
---======================================================================
 do
 	local count = #Players:GetPlayers()
 	if count <= 2 then
@@ -295,9 +289,6 @@ do
 	end
 end
 
---======================================================================
--- CUSTOM UI LIBRARY
---======================================================================
 local Theme = {
 	Bg = Color3.fromRGB(14, 14, 17),
 	Side = Color3.fromRGB(17, 17, 21),
@@ -309,6 +300,20 @@ local Theme = {
 	Sub = Color3.fromRGB(125, 125, 138),
 	Accent = Color3.fromRGB(138, 43, 226),
 	Off = Color3.fromRGB(52, 52, 62),
+	Danger = Color3.fromRGB(220, 70, 80),
+}
+
+-- Roblox asset icons (Lucide set, public rbxassetid)
+local ICONS = {
+	auto = "rbxassetid://10709782230",     -- bot
+	hub = "rbxassetid://10734975692",      -- swords
+	level = "rbxassetid://10747363465",    -- trending-up
+	potion = "rbxassetid://10734883986",   -- flask-conical
+	sell = "rbxassetid://10709811110",     -- coins
+	misc = "rbxassetid://10734950309",     -- settings
+	search = "rbxassetid://10734943674",   -- search
+	minus = "rbxassetid://10734896206",    -- minus
+	close = "rbxassetid://10747384394",    -- x
 }
 
 local LEFT, CENTER, RIGHT = Enum.TextXAlignment.Left, Enum.TextXAlignment.Center, Enum.TextXAlignment.Right
@@ -355,6 +360,7 @@ end
 
 local function MakeUI(cfg)
 	local W = {}
+	local CORNER_R = 10
 	local Conns, Flags = {}, {}
 	local current
 	local loading, dirty = false, false
@@ -431,7 +437,12 @@ local function MakeUI(cfg)
 	corner(main, 10)
 	stroke(main)
 
+	-- ClipsDescendants does not follow UICorner, so the side panel and footer
+	-- round their own outer corners and square off the edges that touch other panels.
 	local side = new("Frame", { Size = UDim2.new(0, 150, 1, -22), BackgroundColor3 = Theme.Side }, main)
+	corner(side, CORNER_R)
+	new("Frame", { Size = UDim2.new(0.5, 0, 1, 0), Position = UDim2.fromScale(0.5, 0), BackgroundColor3 = Theme.Side }, side) -- square right edge
+	new("Frame", { Size = UDim2.new(1, 0, 0, CORNER_R), Position = UDim2.new(0, 0, 1, -CORNER_R), BackgroundColor3 = Theme.Side }, side) -- square bottom edge
 	new("Frame", { Size = UDim2.new(0, 1, 1, 0), Position = UDim2.new(1, -1, 0, 0), BackgroundColor3 = Theme.Stroke }, side)
 
 	local title = mkLabel({
@@ -455,7 +466,10 @@ local function MakeUI(cfg)
 	}, header)
 	corner(searchBox, 6)
 	stroke(searchBox)
-	mkLabel({ Text = "🔍", Size = UDim2.fromOffset(26, 28), TextSize = 12, TextColor3 = Theme.Sub }, searchBox)
+	new("ImageLabel", {
+		Image = ICONS.search, ImageColor3 = Theme.Sub, BackgroundTransparency = 1,
+		Size = UDim2.fromOffset(14, 14), Position = UDim2.fromOffset(8, 7)
+	}, searchBox)
 
 	local search = new("TextBox", {
 		Size = UDim2.new(1, -32, 1, 0), Position = UDim2.fromOffset(28, 0), BackgroundTransparency = 1,
@@ -464,11 +478,44 @@ local function MakeUI(cfg)
 	}, searchBox)
 
 	local hideBtn = new("TextButton", {
-		Text = "—", Font = Enum.Font.GothamBold, TextSize = 14, TextColor3 = Theme.Sub,
-		Size = UDim2.fromOffset(28, 28), Position = UDim2.new(1, -72, 0, 7), BackgroundColor3 = Theme.Row
+		Text = "", Size = UDim2.fromOffset(28, 28), Position = UDim2.new(1, -70, 0, 7), BackgroundColor3 = Theme.Row
 	}, header)
 	corner(hideBtn, 6)
-	mkLabel({ Text = "✥", Size = UDim2.fromOffset(28, 28), Position = UDim2.new(1, -38, 0, 7), TextColor3 = Theme.Sub, TextSize = 15 }, header)
+	local hideIc = new("ImageLabel", {
+		Image = ICONS.minus, ImageColor3 = Theme.Sub, BackgroundTransparency = 1,
+		Size = UDim2.fromOffset(14, 14), Position = UDim2.fromOffset(7, 7)
+	}, hideBtn)
+	connect(hideBtn.MouseEnter, function()
+		tween(hideBtn, 0.12, { BackgroundColor3 = Theme.RowHi })
+		tween(hideIc, 0.12, { ImageColor3 = Theme.Text })
+	end)
+	connect(hideBtn.MouseLeave, function()
+		tween(hideBtn, 0.12, { BackgroundColor3 = Theme.Row })
+		tween(hideIc, 0.12, { ImageColor3 = Theme.Sub })
+	end)
+
+	local closeBtn = new("TextButton", {
+		Text = "", Size = UDim2.fromOffset(28, 28), Position = UDim2.new(1, -38, 0, 7), BackgroundColor3 = Theme.Row
+	}, header)
+	corner(closeBtn, 6)
+	local closeIc = new("ImageLabel", {
+		Image = ICONS.close, ImageColor3 = Theme.Sub, BackgroundTransparency = 1,
+		Size = UDim2.fromOffset(14, 14), Position = UDim2.fromOffset(7, 7)
+	}, closeBtn)
+	local closeArmed, closeToken = false, 0
+	local function closeIdle()
+		closeArmed = false
+		tween(closeBtn, 0.12, { BackgroundColor3 = Theme.Row })
+		tween(closeIc, 0.12, { ImageColor3 = Theme.Sub })
+	end
+	connect(closeBtn.MouseEnter, function()
+		if closeArmed then return end
+		tween(closeBtn, 0.12, { BackgroundColor3 = Theme.Danger })
+		tween(closeIc, 0.12, { ImageColor3 = Color3.new(1, 1, 1) })
+	end)
+	connect(closeBtn.MouseLeave, function()
+		if not closeArmed then closeIdle() end
+	end)
 
 	local content = new("Frame", {
 		Size = UDim2.new(1, -150, 1, -64), Position = UDim2.fromOffset(150, 42), BackgroundTransparency = 1
@@ -477,6 +524,8 @@ local function MakeUI(cfg)
 	local footer = new("Frame", {
 		Size = UDim2.new(1, 0, 0, 22), Position = UDim2.new(0, 0, 1, -22), BackgroundColor3 = Theme.Side
 	}, main)
+	corner(footer, CORNER_R)
+	new("Frame", { Size = UDim2.new(1, 0, 0, CORNER_R), BackgroundColor3 = Theme.Side }, footer) -- square top edge
 	new("Frame", { Size = UDim2.new(1, 0, 0, 1), BackgroundColor3 = Theme.Stroke }, footer)
 	mkLabel({ Text = cfg.Version, Size = UDim2.fromScale(1, 1), TextSize = 10, TextColor3 = Theme.Sub }, footer)
 
@@ -535,6 +584,24 @@ local function MakeUI(cfg)
 
 	local function setOpen(v) main.Visible = v end
 	connect(hideBtn.MouseButton1Click, function() setOpen(false) end)
+
+	-- X = close the menu for good (stops all automation + unloads). Two clicks to avoid accidents.
+	connect(closeBtn.MouseButton1Click, function()
+		if not closeArmed then
+			closeArmed = true
+			closeToken += 1
+			local my = closeToken
+			tween(closeBtn, 0.12, { BackgroundColor3 = Theme.Danger })
+			tween(closeIc, 0.12, { ImageColor3 = Color3.new(1, 1, 1) })
+			W:Notify("Close menu", "Click X again to close the menu and stop all automation.", 2.5)
+			task.delay(2.5, function()
+				if closeArmed and my == closeToken then closeIdle() end
+			end)
+		else
+			closeArmed = false
+			if W.OnClose then W.OnClose() else W:Destroy() end
+		end
+	end)
 
 	do
 		local fb = new("TextButton", {
@@ -623,7 +690,8 @@ local function MakeUI(cfg)
 		t.page.Visible = on
 		t.ind.Visible = on
 		t.btn.BackgroundTransparency = on and 0 or 1
-		t.ic.TextColor3 = on and Theme.Accent or Theme.Sub
+		local icCol = on and Theme.Accent or Theme.Sub
+		if t.ic:IsA("ImageLabel") then t.ic.ImageColor3 = icCol else t.ic.TextColor3 = icCol end
 		t.tx.TextColor3 = on and Theme.Text or Theme.Sub
 	end
 
@@ -647,7 +715,14 @@ local function MakeUI(cfg)
 			BackgroundColor3 = Theme.Accent, Visible = false
 		}, tab.btn)
 		corner(tab.ind, 2)
-		tab.ic = mkLabel({ Text = icon or "•", Size = UDim2.fromOffset(28, 30), Position = UDim2.fromOffset(8, 0), TextColor3 = Theme.Sub, TextSize = 13 }, tab.btn)
+		if type(icon) == "string" and icon:find("^rbx") then
+			tab.ic = new("ImageLabel", {
+				Image = icon, ImageColor3 = Theme.Sub, BackgroundTransparency = 1, ScaleType = Enum.ScaleType.Fit,
+				Size = UDim2.fromOffset(16, 16), Position = UDim2.fromOffset(14, 7)
+			}, tab.btn)
+		else
+			tab.ic = mkLabel({ Text = icon or "•", Size = UDim2.fromOffset(28, 30), Position = UDim2.fromOffset(8, 0), TextColor3 = Theme.Sub, TextSize = 13 }, tab.btn)
+		end
 		tab.tx = mkLabel({ Text = name, Size = UDim2.new(1, -42, 1, 0), Position = UDim2.fromOffset(38, 0), TextXAlignment = LEFT, TextColor3 = Theme.Sub }, tab.btn)
 
 		local page = new("ScrollingFrame", {
@@ -1019,9 +1094,6 @@ local function MakeUI(cfg)
 	return W
 end
 
---======================================================================
--- WINDOW + TABS
---======================================================================
 local UI = MakeUI({
 	Name = "zeohub",
 	GuiName = "Zeohub_AnimeDice",
@@ -1030,16 +1102,13 @@ local UI = MakeUI({
 	File = "AnimeDice.json",
 })
 
-local AutoTab = UI:Tab("Auto", "⚡")
-local HubTab = UI:Tab("AutoHub", "⚔")
-local LevelTab = UI:Tab("LevelUp", "▲")
-local PotionTab = UI:Tab("Potions", "⚗")
-local SellTab = UI:Tab("Auto Sell", "$")
-local MiscTab = UI:Tab("Misc", "⚙")
+local AutoTab = UI:Tab("Auto", ICONS.auto)
+local HubTab = UI:Tab("AutoHub", ICONS.hub)
+local LevelTab = UI:Tab("LevelUp", ICONS.level)
+local PotionTab = UI:Tab("Potions", ICONS.potion)
+local SellTab = UI:Tab("Auto Sell", ICONS.sell)
+local MiscTab = UI:Tab("Misc", ICONS.misc)
 
---======================================================================
--- Game references
---======================================================================
 local Network = ReplicatedStorage:WaitForChild("Network")
 local Framework = ReplicatedStorage:WaitForChild("Framework")
 local Features = Framework:WaitForChild("Features")
@@ -1075,9 +1144,6 @@ local ROMAN = {
 	VII = true, VIII = true, IX = true, X = true, XI = true, XII = true
 }
 
---======================================================================
--- Helpers
---======================================================================
 local unloaded = false
 local Loops, Toggles = {}, {}
 local afkConn
@@ -1213,10 +1279,8 @@ local function unload()
 	env.zeohub_AnimeDice_Unload = nil
 end
 env.zeohub_AnimeDice_Unload = unload
+UI.OnClose = unload
 
---======================================================================
--- AUTO · Roll
---======================================================================
 local rollCard = AutoTab:Card("Roll")
 local rollCount, rollStart, lastRoll = 0, os.clock(), "—"
 local rollPara = rollCard:Paragraph({ Title = "Fast Roll", Content = "Idle." })
@@ -1295,9 +1359,6 @@ rollCard:Button({
 	end
 })
 
---======================================================================
--- AUTO · Plot
---======================================================================
 local plotCard = AutoTab:Card("Plot")
 local collectInterval, equipInterval = 15, 10
 
@@ -1362,9 +1423,6 @@ plotCard:Button({
 	end
 })
 
---======================================================================
--- AUTO · Dice
---======================================================================
 local diceCard = AutoTab:Card("Dice")
 
 local function diceList()
@@ -1434,9 +1492,6 @@ diceCard:Button({
 	end
 })
 
---======================================================================
--- AUTO · Upgrades
---======================================================================
 local upgradeCard = AutoTab:Card("Upgrades")
 local branchSet = toSet(BRANCHES)
 local function branchOf(name)
@@ -1502,9 +1557,6 @@ upgradeCard:Button({
 	end
 })
 
---======================================================================
--- AUTO · Quests
---======================================================================
 local questCard = AutoTab:Card("Quests")
 local function claimQuests()
 	local D = getModule("Data.DataController")
@@ -1543,9 +1595,6 @@ questCard:Button({
 	end
 })
 
---======================================================================
--- AUTO · Rebirth
---======================================================================
 local rebirthCard = AutoTab:Card("Rebirth")
 local function rebirthInfo()
 	local R = getModule("Rebirth.Rebirths")
@@ -1592,9 +1641,6 @@ rebirthCard:Button({
 	end
 })
 
---======================================================================
--- LEVELUP
---======================================================================
 local levelCard = LevelTab:Card("Auto Level Up")
 local levelSettings = LevelTab:Card("Settings")
 local levelMinRarity, levelTarget = "Common", 10
@@ -1670,9 +1716,6 @@ levelSettings:Input({
 	end
 })
 
---======================================================================
--- AUTOHUB · Towers
---======================================================================
 local towerCard = HubTab:Card("Towers")
 local towerDifficulty, towerReEquip = "Dragon Tower", true
 local function towerNames()
@@ -1756,9 +1799,6 @@ towerCard:Button({
 	end
 })
 
---======================================================================
--- AUTOHUB · Grade / Trait
---======================================================================
 local function buildRoller(cfg)
 	local selected, target, overwrite = {}, cfg.defaultTarget, false
 	local card = HubTab:Card(cfg.name)
@@ -1896,9 +1936,6 @@ buildRoller({
 	}
 })
 
---======================================================================
--- POTIONS
---======================================================================
 local potionCard = PotionTab:Card("Auto Use")
 local potionTypes = PotionTab:Card("Potion Types")
 local POTION_BASES = { "Normal", "Dragon", "Cursed", "Pirate", "Leaf" }
@@ -2014,9 +2051,6 @@ for _, kind in ipairs({ "Luck", "Money", "Damage" }) do
 	})
 end
 
---======================================================================
--- AUTO SELL
---======================================================================
 local sellCard = SellTab:Card("Auto Sell")
 local sellAllCard = SellTab:Card("Sell whole rarity")
 local sellMutCard = SellTab:Card("Sell by mutation")
@@ -2094,9 +2128,6 @@ do
 	})
 end
 
---======================================================================
--- MISC
---======================================================================
 local utilCard = MiscTab:Card("Utility")
 local scriptCard = MiscTab:Card("Script")
 
@@ -2144,9 +2175,6 @@ scriptCard:Button({
 scriptCard:Button({ Name = "Unload script", Callback = unload })
 scriptCard:Label("Toggle the menu with RightShift or the floating N button.")
 
---======================================================================
--- Load saved settings + status updater
---======================================================================
 UI:LoadConfig()
 
 task.spawn(function()
